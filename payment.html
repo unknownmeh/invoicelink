@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice Link — Payment Request</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="payment.css">
+</head>
+<body>
+
+<div class="page">
+  <div class="brand-row">
+    <span class="brand-row__mark" aria-hidden="true">IL</span>
+    <span class="brand-row__name">Invoice Link</span>
+  </div>
+
+  <!-- Loading -->
+  <div class="state-block is-active" id="stateLoading">
+    <div class="page-loader">
+      <div class="spinner" aria-hidden="true"></div>
+      <p>Loading your invoice…</p>
+    </div>
+  </div>
+
+  <!-- Invalid / not found -->
+  <div class="state-block" id="stateInvalid">
+    <div class="card" style="text-align:center;">
+      <p class="status-card__title" style="margin-bottom:8px;">Invoice not found</p>
+      <p class="status-card__body" id="invalidReason">This payment link is invalid or has expired. Please ask the freelancer to resend it.</p>
+    </div>
+  </div>
+
+  <!-- Main invoice + payment flow -->
+  <div class="state-block" id="stateInvoice">
+
+    <div class="card request-card">
+      <p class="request-card__eyebrow">Payment Request</p>
+      <p class="request-card__from">From: <span id="fromName">—</span></p>
+      <div class="request-meta">
+        <div class="request-meta__row">
+          <span class="request-meta__label">Invoice</span>
+          <span class="request-meta__value" id="invoiceIdText">—</span>
+        </div>
+        <div class="request-meta__row">
+          <span class="request-meta__label">Service</span>
+          <span class="request-meta__value" id="serviceTitleText">—</span>
+        </div>
+        <div class="request-meta__row" id="descriptionRow">
+          <span class="request-meta__label">Description</span>
+          <span class="request-meta__value" id="descriptionText">—</span>
+        </div>
+        <div class="request-meta__row">
+          <span class="request-meta__label">Due date</span>
+          <span class="request-meta__value" id="dueDateText">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card amount-card">
+      <p class="amount-card__label">Amount Payable</p>
+      <p class="amount-card__value" id="amountText">₹0</p>
+    </div>
+
+    <div class="card upi-card">
+      <h2>Pay via UPI</h2>
+      <div class="upi-row">
+        <span class="upi-row__id" id="upiIdText">—</span>
+        <button class="btn btn-secondary" style="width:auto; min-height:40px; padding:0 14px; font-size:13px;" id="copyUpiBtn">Copy UPI ID</button>
+      </div>
+      <div class="qr-wrap">
+        <img id="qrImage" src="assets/qr-placeholder.png" alt="UPI QR code for this invoice">
+        <p>Scan the QR code using your preferred UPI app.</p>
+      </div>
+      <button class="btn btn-primary" id="paidBtn">I Have Made the Payment</button>
+    </div>
+
+    <div class="card form-card" id="submissionCard">
+      <h2>Submit Payment Details</h2>
+      <p class="form-card__intro">After completing your payment, enter your transaction details below.</p>
+
+      <form id="submissionForm" novalidate>
+        <div class="field">
+          <label for="fullName">Full name</label>
+          <input type="text" id="fullName" name="fullName" required>
+          <span class="field-error" data-error-for="fullName"></span>
+        </div>
+        <div class="field">
+          <label for="payerEmail">Email</label>
+          <input type="email" id="payerEmail" name="payerEmail">
+          <span class="field-error" data-error-for="payerEmail"></span>
+        </div>
+        <div class="field">
+          <label for="payerPhone">Phone</label>
+          <input type="tel" id="payerPhone" name="payerPhone">
+        </div>
+        <div class="field">
+          <label for="utr">UTR / Transaction ID</label>
+          <input type="text" id="utr" name="utr" required>
+          <span class="field-error" data-error-for="utr"></span>
+        </div>
+        <div class="field">
+          <label for="paymentDate">Payment date</label>
+          <input type="date" id="paymentDate" name="paymentDate" required>
+          <span class="field-error" data-error-for="paymentDate"></span>
+        </div>
+        <div class="field">
+          <label for="payerNotes">Notes</label>
+          <textarea id="payerNotes" name="payerNotes"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" id="submitPaymentBtn">Submit Payment</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Status after submission -->
+  <div class="state-block" id="stateStatus">
+    <div class="card status-card">
+      <div class="status-card__icon" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <p class="status-card__title">Payment Details Submitted</p>
+      <p class="status-card__body">Your transaction details have been received. Your payment is currently awaiting verification.</p>
+      <div class="status-summary">
+        <div class="request-meta__row">
+          <span class="request-meta__label">Invoice</span>
+          <span class="request-meta__value" id="statusInvoiceId">—</span>
+        </div>
+        <div class="request-meta__row">
+          <span class="request-meta__label">Amount</span>
+          <span class="request-meta__value" id="statusAmount">—</span>
+        </div>
+        <div class="request-meta__row">
+          <span class="request-meta__label">Status</span>
+          <span class="request-meta__value" id="statusStatus">Verification Pending</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+<script src="payment.js"></script>
+</body>
+</html>
